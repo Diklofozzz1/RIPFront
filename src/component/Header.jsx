@@ -1,26 +1,26 @@
 import React, {useEffect, useState} from "react";
 import {Button, IconButton, makeStyles, TextField} from "@material-ui/core";
 import {Visibility, VisibilityOff} from "@material-ui/icons";
+import UserCard from "./UserCard";
 
 
-
-const useStyles = makeStyles((theme)=>({
-    root:{
-        display:'flex',
+const useStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
         justifyContent: 'center',
-        alignItems:'center',
-        height:'100vh',
+        alignItems: 'center',
+        height: '100vh',
     },
 
 
-    midTitle:{
+    midTitle: {
         color: '#151E2B',
-        fontSize:'3rem',
+        fontSize: '3rem',
     },
 
-    midTextContainer:   {
-        textAlign:'center',
-        fontFamily:'Didact Gothic',
+    midTextContainer: {
+        textAlign: 'center',
+        fontFamily: 'Didact Gothic',
     },
 
     fieldContainer: {
@@ -29,7 +29,9 @@ const useStyles = makeStyles((theme)=>({
 
 }));
 
-export default function Header(){
+let id = 0;
+
+export default function Header() {
 
     const [firstName, setFirstName] = useState('');
     const [secondName, setSecondName] = useState('');
@@ -39,14 +41,21 @@ export default function Header(){
     const classes = useStyles();
     const [checked, setChecked] = useState(false);
 
-    useEffect(()=>{
+    const [userCards, createUserCards] = useState([]);
+
+
+    const cardCreate = () => {
+        createUserCards([...userCards, {id: id, firstName: firstName, secondName: secondName, password: password}]);
+        id++;
+    }
+
+    useEffect(() => {
         setChecked(true);
-    },[])
+    }, [])
 
-
-    return(
+    return (
         <div className={classes.midTextContainer}>
-            <h1 className={classes.midTitle}>Добро пожаловать в мое бесполезное приложение)<br /></h1>
+            <h1 className={classes.midTitle}>Добро пожаловать в мое бесполезное приложение)<br/></h1>
             <h2 color='blue'> Введите данные пользователя в полях ниже </h2>
 
             <div>
@@ -77,7 +86,7 @@ export default function Header(){
                     }}
                 />
 
-                <br />
+                <br/>
 
                 <TextField
                     margin="dense"
@@ -115,12 +124,40 @@ export default function Header(){
                     }}
                 />
 
-                <br />
+                <br/>
 
-                <Button variant="contained" style={{margin: 10}} onClick={() =>{}} color="primary">
+                <Button variant="contained" style={{margin: 10}} onClick={()=>{cardCreate()}} color="primary">
                     Зарегистрировать
                 </Button>
 
+                <hr/>
+
+                <div
+                    style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        paddingBottom: '3%',
+                    }}>
+                    {
+                        userCards.map(el => {
+                            console.log(el.id)
+                            return (
+                                <UserCard
+                                    id={el.id}
+                                    key = {el.id}
+                                    firstName={el.firstName}
+                                    secondName={el.secondName}
+                                    password={el.password}
+                                    onDelete={() => {
+                                        console.log("22: " + el.id)
+                                        createUserCards(userCards.filter(rec => rec.id !== el.id)); }}
+                                />
+                            );
+                        })
+                    }
+                </div>
 
             </div>
 
