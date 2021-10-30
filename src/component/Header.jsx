@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Button, IconButton, makeStyles, TextField} from "@material-ui/core";
 import {Visibility, VisibilityOff} from "@material-ui/icons";
 import UserCard from "./UserCard";
+import {apiCreateUser, apiDeleteUser, apiGetUsersPool, apiUpdateUser} from "../api/api";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -45,13 +46,55 @@ export default function Header() {
 
 
     const cardCreate = () => {
-        createUserCards([...userCards, {id: id, firstName: firstName, secondName: secondName, password: password}]);
-        id++;
+        apiCreateUser(firstName, secondName, password).then(response => {
+            if (response.status === 200) {
+                createUserCards([...userCards, {
+                    id: response.data.id,
+                    firstName: response.data.firstName,
+                    secondName: response.data.lastName,
+                    password: response.data.password
+                }]);
+            }
+        }).catch((err) => {
+            alert('походу навернулся докер, вот тебе ошибка: ' + err)
+        })
     }
 
-    useEffect(() => {
+    useEffect(async () => {
+        try {
+            const response = await apiGetUsersPool();
+            let users = [];
+
+            response.data.forEach(user => {
+                users.push({
+                    id: user.id,
+                    firstName: user.firstName,
+                    secondName: user.lastName,
+                    password: user.password
+                })
+            });
+
+            createUserCards(users);
+
+        } catch (err) {
+            createUserCards([]);
+            alert('походу навернулся докер, вот тебе ошибка: ' + err)
+        }
         setChecked(true);
     }, [])
+
+    const deleteHandler = (_id) => {
+        console.log('api: '+_id);
+        apiDeleteUser(_id).then(response => {
+            if (response.status === 200) {
+                console.log("22: " + _id)
+                createUserCards(userCards.filter(rec => rec.id !== _id));
+            }
+        }).catch((err) => {
+            alert('походу навернулся докер, вот тебе ошибка: ' + err)
+        })
+    }
+
 
     return (
         <div className={classes.midTextContainer}>
@@ -126,7 +169,9 @@ export default function Header() {
 
                 <br/>
 
-                <Button variant="contained" style={{margin: 10}} onClick={()=>{cardCreate()}} color="primary">
+                <Button variant="contained" style={{margin: 10}} onClick={() => {
+                    cardCreate()
+                }} color="primary">
                     Зарегистрировать
                 </Button>
 
@@ -146,13 +191,13 @@ export default function Header() {
                             return (
                                 <UserCard
                                     id={el.id}
-                                    key = {el.id}
+                                    key={el.id}
                                     firstName={el.firstName}
                                     secondName={el.secondName}
                                     password={el.password}
                                     onDelete={() => {
-                                        console.log("22: " + el.id)
-                                        createUserCards(userCards.filter(rec => rec.id !== el.id)); }}
+                                        deleteHandler(el.id);
+                                    }}
                                 />
                             );
                         })

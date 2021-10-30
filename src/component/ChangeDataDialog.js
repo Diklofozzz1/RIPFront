@@ -4,11 +4,11 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, D
 import {IconButton} from "@material-ui/core";
 import {Visibility, VisibilityOff} from "@material-ui/icons";
 
-export default function ChangeDataDialog({firstName, secondName, password, open, onClose, onSave}) {
+export default function ChangeDataDialog({firstName, secondName, open, onClose, onSave}) {
     const [editableFirstName, editFirstName] = useState(firstName);
     const [editableSecondName, editSecondName] = useState(secondName);
-    const [editablePassword, editPassword] = useState(String(password));
-    const [showPass, showPassword] = useState(false);
+
+
 
     return (
         <Dialog open = {open} onClose = {onClose}>
@@ -38,48 +38,11 @@ export default function ChangeDataDialog({firstName, secondName, password, open,
                     value={editableSecondName}
                     onChange={event => editSecondName(event.target.value)}
                 />
-                <TextField
-                    margin="dense"
-                    id="password"
-                    label="Пароль (больше 8 символов)"
-                    variant = 'standard'
-                    fullWidth
-                    value={editablePassword}
-                    error={editablePassword.length < 8}
-                    onChange={event => editPassword(event.target.value)}
-                    type={showPass ? '' : 'password'}
-                    inputProps={{
-                        size: 40
-                    }}
-                    InputProps={{
-                        endAdornment: showPass ?
-                            <IconButton
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={() => {
-                                    showPassword(false)
-                                }}
-                                children={<Visibility/>}
-                                color="inherit"/>
-                            :
-                            <IconButton
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={() => {
-                                    showPassword(true)
-                                }}
-                                children={<VisibilityOff/>}
-                                color="inherit"/>,
-
-                    }}
-                />
             </DialogContent>
             <DialogActions>
                 <Button onClick = {onClose}>Выйти</Button>
                 <Button onClick = {() => {
-                    onSave(editableFirstName, editableSecondName, editablePassword);
+                    onSave(editableFirstName, editableSecondName);
                     onClose();
                 }}>Сохранить</Button>
             </DialogActions>
