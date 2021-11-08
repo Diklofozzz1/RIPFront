@@ -3,6 +3,8 @@ import {Button, IconButton, makeStyles, TextField} from "@material-ui/core";
 import {Visibility, VisibilityOff} from "@material-ui/icons";
 import UserCard from "./UserCard";
 import {apiCreateUser, apiDeleteUser, apiGetUsersPool, apiUpdateUser} from "../api/api";
+import DescriptionDialog from "./DescriptionDialog";
+import DescriptionCard from "./DescriptionCard";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -43,7 +45,6 @@ export default function Header() {
     const [checked, setChecked] = useState(false);
 
     const [userCards, createUserCards] = useState([]);
-
 
     const cardCreate = () => {
         apiCreateUser(firstName, secondName, password).then(response => {
@@ -96,10 +97,33 @@ export default function Header() {
     }
 
 
+    const [description, setDescription] = useState('')
+    const [descriptionCard, createDescriptionCard] = useState([
+        {id: 1, description: 'some g'}
+    ]);
+
+    const [descriptionDialogIsOpen, openDescriptionDialog] = useState(false)
+
+    const deleteDescriptionHandler = (_id) => {
+       createDescriptionCard(descriptionCard.filter(rec => rec.id !== _id))
+    }
+
+
     return (
         <div className={classes.midTextContainer}>
             <h1 className={classes.midTitle}>Добро пожаловать в мое бесполезное приложение)<br/></h1>
             <h2 color='blue'> Введите данные пользователя в полях ниже </h2>
+
+
+            <DescriptionDialog
+                open={descriptionDialogIsOpen}
+                onClose={()=>{openDescriptionDialog(false)}}
+                onSave={(newDescription)=>{
+                    setDescription(newDescription);
+                    createDescriptionCard([...descriptionCard, {id: id, description: newDescription}])
+                }}
+            />
+
 
             <div>
                 <TextField
@@ -174,6 +198,29 @@ export default function Header() {
                 }} color="primary">
                     Зарегистрировать
                 </Button>
+
+                <Button variant="contained" style={{margin: 10}} onClick={() => {
+                    openDescriptionDialog(!descriptionDialogIsOpen)
+                }} color="primary">
+                    Добавить заметку
+                </Button>
+
+
+                <hr/>
+                    {
+                        descriptionCard.map(el => {
+                            return(
+                                <DescriptionCard
+                                    id={el.id}
+                                    key={el.id}
+                                    _description={el.description}
+                                    onDelete={()=>{
+                                        deleteDescriptionHandler(el.id)
+                                    }}
+                                />
+                            )
+                        })
+                    }
 
                 <hr/>
 

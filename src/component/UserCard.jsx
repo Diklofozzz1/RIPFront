@@ -30,7 +30,7 @@ export default function UserCard({id ,firstName, secondName, password, onDelete}
 
 
     return (
-        <Box sx={{ maxWidth: 250 }} style={{marginLeft: "auto", marginRight: "auto", marginBottom: '2%'}} id = {id}>
+        <Box sx={{ minWidth: 450 }} style={{marginLeft: "auto", marginRight: "auto", marginBottom: '2%'}} id = {id}>
             <ChangeDataDialog
                  firstName={firstName}
                  secondName={secondName}
