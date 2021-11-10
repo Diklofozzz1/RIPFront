@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, DialogContentText } from '@mui/material';
-import {IconButton} from "@material-ui/core";
-import {Visibility, VisibilityOff} from "@material-ui/icons";
 
 export default function DescriptionDialog({_description , open, onClose, onSave}) {
     const [description, setDescription] = useState(_description);
+
 
     return (
         <Dialog open = {open} onClose = {onClose}>

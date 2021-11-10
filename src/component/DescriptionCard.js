@@ -6,18 +6,27 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import {useState} from "react";
-import ChangeDataDialog from "./ChangeDataDialog";
-import {apiCreateUser, apiUpdateUser} from "../api/api";
 import ChangeDescriptionDialog from "./ChangeDescriptionDialog";
-
+import {socket} from "../api/socket";
 
 export default function DescriptionCard({id ,_description, onDelete}) {
     const [editDescriptionDialogIsOpen, openEditDescriptionDialog] = useState(false);
 
     const [description, updateDescription] = useState(_description);
 
-    const updateHandler = (_id, _description) => {
-
+    const updateHandler = async (_id, _description) => {
+        try{
+            console.log(_description)
+            socket.emit("patch_description", {
+                id: _id,
+                description: _description
+            })
+            await socket.on("patch_description_answer", (arg)=>{
+                updateDescription(arg.description)
+            })
+        }catch(err){
+            alert('походу навернулся докер (но возможно виноваты сокеты), вот тебе ошибка: '+ err)
+        }
     }
 
 
@@ -28,8 +37,7 @@ export default function DescriptionCard({id ,_description, onDelete}) {
                 open={editDescriptionDialogIsOpen}
                 onClose={()=>{openEditDescriptionDialog(false)}}
                 onSave={(newDescription)=>{
-                    updateHandler(id, description);
-                    updateDescription(newDescription)
+                    updateHandler(id, newDescription);
                 }}
             />
 

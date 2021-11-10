@@ -5,6 +5,7 @@ import UserCard from "./UserCard";
 import {apiCreateUser, apiDeleteUser, apiGetUsersPool, apiUpdateUser} from "../api/api";
 import DescriptionDialog from "./DescriptionDialog";
 import DescriptionCard from "./DescriptionCard";
+import {socket} from "../api/socket";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -46,6 +47,18 @@ export default function Header() {
 
     const [userCards, createUserCards] = useState([]);
 
+    const [description, setDescription] = useState('')
+    const [descriptionCard, createDescriptionCard] = useState([]);
+
+    const [descriptionDialogIsOpen, openDescriptionDialog] = useState(false)
+
+    const deleteDescriptionHandler = (_id) => {
+        socket.emit("delete_description", {
+            id: _id
+        })
+        createDescriptionCard(descriptionCard.filter(rec => rec.id !== _id))
+    }
+
     const cardCreate = () => {
         apiCreateUser(firstName, secondName, password).then(response => {
             if (response.status === 200) {
@@ -63,6 +76,18 @@ export default function Header() {
 
     useEffect(async () => {
         try {
+            socket.emit("get_all_descriptions", {});
+            await socket.on('get_all_descriptions_answer', (arg)=>{
+                let descripts = [];
+                for (const item of arg ){
+                    descripts.push({
+                        id: item.id,
+                        description: item.description
+                    });
+                }
+                createDescriptionCard(descripts)
+            })
+
             const response = await apiGetUsersPool();
             let users = [];
 
@@ -96,18 +121,18 @@ export default function Header() {
         })
     }
 
-
-    const [description, setDescription] = useState('')
-    const [descriptionCard, createDescriptionCard] = useState([
-        {id: 1, description: 'some g'}
-    ]);
-
-    const [descriptionDialogIsOpen, openDescriptionDialog] = useState(false)
-
-    const deleteDescriptionHandler = (_id) => {
-       createDescriptionCard(descriptionCard.filter(rec => rec.id !== _id))
+    const descriptionCreator = async (newDescription) => {
+        try{
+            socket.emit("create_description", {
+                description: newDescription
+            })
+            await socket.on("create_description_answer", (arg)=>{
+                createDescriptionCard([...descriptionCard, {id: arg.id, description: arg.description}])
+            })
+        }catch (err){
+            alert('походу навернулся докер(но возможно и сокеты), вот тебе ошибка: ' + err)
+        }
     }
-
 
     return (
         <div className={classes.midTextContainer}>
@@ -119,8 +144,8 @@ export default function Header() {
                 open={descriptionDialogIsOpen}
                 onClose={()=>{openDescriptionDialog(false)}}
                 onSave={(newDescription)=>{
-                    setDescription(newDescription);
-                    createDescriptionCard([...descriptionCard, {id: id, description: newDescription}])
+                    // setDescription(newDescription);
+                    descriptionCreator(newDescription)
                 }}
             />
 
