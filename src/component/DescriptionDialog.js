@@ -17,7 +17,7 @@ export default function DescriptionDialog({_description , open, onClose, onSave}
                     autoFocus
                     margin = 'dense'
                     id = 'name'
-                    label = 'Имя'
+                    label = 'Заметка'
                     type = 'text'
                     fullWidth
                     variant = 'standard'

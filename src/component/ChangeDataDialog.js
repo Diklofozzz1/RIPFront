@@ -8,8 +8,6 @@ export default function ChangeDataDialog({firstName, secondName, open, onClose, 
     const [editableFirstName, editFirstName] = useState(firstName);
     const [editableSecondName, editSecondName] = useState(secondName);
 
-
-
     return (
         <Dialog open = {open} onClose = {onClose}>
             <DialogTitle>Меняем что-то?</DialogTitle>

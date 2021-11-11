@@ -232,6 +232,7 @@ export default function Header() {
 
 
                 <hr/>
+                <h2 color='blue'> Заметки </h2>
                     {
                         descriptionCard.map(el => {
                             return(
